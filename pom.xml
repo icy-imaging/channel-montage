@@ -7,13 +7,13 @@
     <!-- Inherited Icy Parent POM -->
     <parent>
         <groupId>org.bioimageanalysis.icy</groupId>
-        <artifactId>parent-pom-plugin</artifactId>
-        <version>1.0.3</version>
+        <artifactId>pom-icy</artifactId>
+        <version>2.2.0</version>
     </parent>
 
     <!-- Project Information -->
     <artifactId>channel-montage</artifactId>
-    <version>2.5.1</version>
+    <version>3.0.0</version>
 
     <packaging>jar</packaging>
 
@@ -22,7 +22,7 @@
         View your multi-channel data as a montage with one image per channel plus a merged, color channel (useful to create figures for
         communication)
     </description>
-    <url>http://icy.bioimageanalysis.org/plugin/channel-montage/</url>
+    <url>https://icy.bioimageanalysis.org/plugin/channel-montage/</url>
     <inceptionYear>2020</inceptionYear>
 
     <organization>
@@ -56,28 +56,11 @@
         </developer>
     </developers>
 
-    <!-- Project properties -->
-    <properties>
-
-    </properties>
-
-    <!-- Project build configuration -->
-    <build>
-
-    </build>
-
     <!-- List of project's dependencies -->
     <dependencies>
-        <!-- The core of Icy -->
-        <dependency>
-            <groupId>org.bioimageanalysis.icy</groupId>
-            <artifactId>icy-kernel</artifactId>
-        </dependency>
-
         <dependency>
             <groupId>org.bioimageanalysis.icy</groupId>
             <artifactId>blockvars</artifactId>
-            <version>0.1.2</version>
         </dependency>
     </dependencies>
 
