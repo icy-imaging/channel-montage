@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2023. Institut Pasteur.
+ * Copyright (c) 2010-2024. Institut Pasteur.
  *
  * This file is part of Icy.
  * Icy is free software: you can redistribute it and/or modify
@@ -18,29 +18,31 @@
 
 package plugins.adufour.viewers;
 
-import icy.canvas.IcyCanvas;
-import icy.canvas.IcyCanvas2D;
-import icy.canvas.Layer;
-import icy.gui.component.button.IcyButton;
-import icy.gui.viewer.Viewer;
-import icy.image.IcyBufferedImage;
-import icy.image.IcyBufferedImageUtil;
-import icy.image.colormap.IcyColorMap;
-import icy.image.colormap.LinearColorMap;
-import icy.image.lut.LUT;
-import icy.image.lut.LUT.LUTChannel;
-import icy.plugin.abstract_.Plugin;
-import icy.plugin.interface_.PluginCanvas;
-import icy.preferences.CanvasPreferences;
-import icy.resource.ResourceUtil;
-import icy.resource.icon.IcyIcon;
-import icy.roi.ROI;
-import icy.sequence.DimensionId;
-import icy.sequence.SequenceEvent.SequenceEventType;
-import icy.system.IcyExceptionHandler;
-import icy.system.thread.SingleProcessor;
-import icy.type.point.Point5D;
-import icy.util.GraphicsUtil;
+import org.bioimageanalysis.icy.common.geom.point.Point5D;
+import org.bioimageanalysis.icy.extension.plugin.abstract_.Plugin;
+import org.bioimageanalysis.icy.extension.plugin.annotation_.IcyPluginIcon;
+import org.bioimageanalysis.icy.extension.plugin.annotation_.IcyPluginName;
+import org.bioimageanalysis.icy.extension.plugin.interface_.PluginCanvas;
+import org.bioimageanalysis.icy.gui.GraphicsUtil;
+import org.bioimageanalysis.icy.gui.canvas.IcyCanvas2D;
+import org.bioimageanalysis.icy.gui.canvas.Layer;
+import org.bioimageanalysis.icy.gui.component.button.IcyButton;
+import org.bioimageanalysis.icy.gui.component.icon.IcySVGIcon;
+import org.bioimageanalysis.icy.gui.component.icon.SVGIcon;
+import org.bioimageanalysis.icy.gui.viewer.Viewer;
+import org.bioimageanalysis.icy.model.colormap.IcyColorMap;
+import org.bioimageanalysis.icy.model.colormap.LinearColorMap;
+import org.bioimageanalysis.icy.model.image.IcyBufferedImage;
+import org.bioimageanalysis.icy.model.image.IcyBufferedImageUtil;
+import org.bioimageanalysis.icy.model.lut.LUT;
+import org.bioimageanalysis.icy.model.roi.ROI;
+import org.bioimageanalysis.icy.model.sequence.DimensionId;
+import org.bioimageanalysis.icy.model.sequence.SequenceEvent;
+import org.bioimageanalysis.icy.system.logging.IcyLogger;
+import org.bioimageanalysis.icy.system.preferences.CanvasPreferences;
+import org.bioimageanalysis.icy.system.thread.SingleProcessor;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 import plugins.adufour.vars.gui.model.IntegerRangeModel;
 import plugins.adufour.vars.gui.swing.SwingVarEditor;
 import plugins.adufour.vars.lang.Var;
@@ -61,18 +63,20 @@ import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-public class ChannelMontage extends Plugin implements PluginCanvas {
+@IcyPluginName("Channel Montage")
+@IcyPluginIcon(path = "/Channel_Montage.png")
+public class ChannelMontage extends Plugin implements PluginCanvas<ChannelMontage.ChannelMontageCanvas> {
     @Override
     public String getCanvasClassName() {
         return ChannelMontage.class.getName();
     }
 
     @Override
-    public IcyCanvas createCanvas(final Viewer viewer) {
+    public ChannelMontageCanvas createCanvas(final Viewer viewer) {
         return new ChannelMontageCanvas(viewer);
     }
 
-    public class ChannelMontageCanvas extends IcyCanvas2D implements MouseWheelListener {
+    public static class ChannelMontageCanvas extends IcyCanvas2D implements MouseWheelListener {
         final ScrollableFlowLayout layout = new ScrollableFlowLayout(ScrollableFlowLayout.Orientation.VERTICAL, FlowLayout.CENTER, 5, 5);
 
         final JPanel mainPanel = new JPanel(layout);
@@ -163,13 +167,13 @@ public class ChannelMontage extends Plugin implements PluginCanvas {
         }
 
         @Override
-        public void customizeToolbar(final JToolBar toolbar) {
-            final IcyIcon rgbIcon = new IcyIcon(ResourceUtil.ICON_RGB_COLOR, false);
-            final IcyIcon grayIcon = new IcyIcon(ResourceUtil.ICON_GRAY_COLOR, false);
+        public void customizeToolbar(final @NotNull JToolBar toolbar) {
+            final IcySVGIcon rgbIcon = new IcySVGIcon(SVGIcon.RGB_IMAGE);
+            final IcySVGIcon grayIcon = new IcySVGIcon(SVGIcon.GRAYSCALE_IMAGE);
 
             toolbar.addSeparator();
 
-            final IcyButton color = new IcyButton(grayIcon);
+            final IcyButton color = new IcyButton(SVGIcon.GRAYSCALE_IMAGE);
             color.setToolTipText("Switch to grayscale mode");
             color.setFocusable(false);
             color.addActionListener(e -> {
@@ -188,7 +192,6 @@ public class ChannelMontage extends Plugin implements PluginCanvas {
 
             imageSize.setDefaultEditorModel(new IntegerRangeModel(250, 20, 2048, 1));
             imageSize.addListener(new VarListener<>() {
-
                 @Override
                 public void valueChanged(final Var<Integer> source, final Integer oldValue, final Integer newValue) {
                     resizeViews();
@@ -206,7 +209,6 @@ public class ChannelMontage extends Plugin implements PluginCanvas {
 
             margin.setDefaultEditorModel(new IntegerRangeModel(5, 0, 100, 1));
             margin.addListener(new VarListener<>() {
-
                 @Override
                 public void valueChanged(final Var<Integer> source, final Integer oldValue, final Integer newValue) {
                     layout.setHgap(newValue);
@@ -311,7 +313,7 @@ public class ChannelMontage extends Plugin implements PluginCanvas {
             }
 
             final ChannelView currentView = channelViews.get(channel);
-            final ChannelView globalView = channelViews.get(channelViews.size() - 1);
+            final ChannelView globalView = channelViews.getLast();
 
             currentView.imageCache.updateLUT();
             currentView.imageChanged();
@@ -338,7 +340,7 @@ public class ChannelMontage extends Plugin implements PluginCanvas {
         }
 
         @Override
-        protected void sequenceROIChanged(final ROI roi, final SequenceEventType type) {
+        protected void sequenceROIChanged(final ROI roi, final SequenceEvent.SequenceEventType type) {
             super.sequenceROIChanged(roi, type);
             repaint();
         }
@@ -405,6 +407,8 @@ public class ChannelMontage extends Plugin implements PluginCanvas {
                     processor.submit(this);
                 }
 
+                @SuppressWarnings("UnstableApiUsage")
+                @Contract(mutates = "this")
                 private void invalidCache() {
                     needRebuild = true;
                 }
@@ -419,7 +423,7 @@ public class ChannelMontage extends Plugin implements PluginCanvas {
 
                     if (channel != -1) {
                         for (int c = 0; c < getCurrentImage().getSizeC(); c++) {
-                            final LUTChannel lutC = lut.getLutChannel(c);
+                            final LUT.LUTChannel lutC = lut.getLutChannel(c);
                             lutC.setEnabled(c == channel);
                             if (grayscale.getValue()) lutC.setColorMap(grayMap, false);
                         }
@@ -447,7 +451,7 @@ public class ChannelMontage extends Plugin implements PluginCanvas {
                             result.get();
                         }
                         catch (final Exception e) {
-                            e.printStackTrace();
+                            IcyLogger.error(ChannelMontage.class, e, e.getLocalizedMessage());
                         }
                     }
 
@@ -472,7 +476,7 @@ public class ChannelMontage extends Plugin implements PluginCanvas {
                             imageCache = IcyBufferedImageUtil.toBufferedImage(img, imageCache, lut);
                         }
                         catch (final InterruptedException e) {
-                            IcyExceptionHandler.showErrorMessage(e, false);
+                            // ignore
                         }
                     }
                     else imageCache = null;
@@ -538,7 +542,7 @@ public class ChannelMontage extends Plugin implements PluginCanvas {
             }
 
             @Override
-            public void mouseMoved(final MouseEvent e) {
+            public void mouseMoved(final @NotNull MouseEvent e) {
                 final Point2D p2 = canvasToImage(e.getPoint());
                 mousePosition.setX(p2.getX());
                 mousePosition.setY(p2.getY());
@@ -552,7 +556,7 @@ public class ChannelMontage extends Plugin implements PluginCanvas {
             }
 
             @Override
-            public void mouseDragged(final MouseEvent e) {
+            public void mouseDragged(final @NotNull MouseEvent e) {
                 final Point2D p2 = canvasToImage(e.getPoint());
                 mousePosition.setX(p2.getX());
                 mousePosition.setY(p2.getY());
@@ -564,7 +568,7 @@ public class ChannelMontage extends Plugin implements PluginCanvas {
             }
 
             @Override
-            public void mouseWheelMoved(final MouseWheelEvent e) {
+            public void mouseWheelMoved(final @NotNull MouseWheelEvent e) {
                 // sizeSlider.setValue(sizeSlider.getValue() + e.getWheelRotation());
                 imageSize.setValue(imageSize.getValue() + e.getWheelRotation());
             }
@@ -742,7 +746,6 @@ public class ChannelMontage extends Plugin implements PluginCanvas {
             public boolean isCacheValid() {
                 return imageCache.isValid();
             }
-
         }
 
         @Override
@@ -790,7 +793,7 @@ public class ChannelMontage extends Plugin implements PluginCanvas {
         }
 
         @Override
-        public void mouseWheelMoved(final MouseWheelEvent e) {
+        public void mouseWheelMoved(final @NotNull MouseWheelEvent e) {
             // sizeSlider.setValue(sizeSlider.getValue() + e.getWheelRotation());
             imageSize.setValue(imageSize.getValue() + e.getWheelRotation());
         }
@@ -840,7 +843,8 @@ public class ChannelMontage extends Plugin implements PluginCanvas {
             return super.preferredLayoutSize(target);
         }
 
-        private static Dimension computeMinSize(final Container target) {
+        @Contract("_ -> new")
+        private static @NotNull Dimension computeMinSize(final @NotNull Container target) {
             synchronized (target.getTreeLock()) {
                 int minx = Integer.MAX_VALUE;
                 //int miny = Integer.MIN_VALUE;
@@ -864,7 +868,8 @@ public class ChannelMontage extends Plugin implements PluginCanvas {
             }
         }
 
-        private Dimension computeSize(final Container target) {
+        @Contract("_ -> new")
+        private @NotNull Dimension computeSize(final @NotNull Container target) {
             synchronized (target.getTreeLock()) {
                 final int hgap = getHgap();
                 final int vgap = getVgap();

@@ -8,14 +8,12 @@
     <parent>
         <groupId>org.bioimageanalysis.icy</groupId>
         <artifactId>pom-icy</artifactId>
-        <version>2.2.0</version>
+        <version>3.0.0-a.1</version>
     </parent>
 
     <!-- Project Information -->
     <artifactId>channel-montage</artifactId>
-    <version>3.0.0</version>
-
-    <packaging>jar</packaging>
+    <version>3.0.0-a.1</version>
 
     <name>Channel Montage</name>
     <description>
@@ -60,6 +58,10 @@
     <dependencies>
         <dependency>
             <groupId>org.bioimageanalysis.icy</groupId>
+            <artifactId>ezplug</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.bioimageanalysis.icy</groupId>
             <artifactId>blockvars</artifactId>
         </dependency>
     </dependencies>
@@ -68,8 +70,7 @@
     <repositories>
         <repository>
             <id>icy</id>
-            <name>Icy's Nexus</name>
-            <url>https://icy-nexus.pasteur.fr/repository/Icy/</url>
+            <url>https://nexus-icy.pasteur.cloud/repository/icy/</url>
         </repository>
     </repositories>
 </project>
