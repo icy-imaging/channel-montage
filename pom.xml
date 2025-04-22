@@ -8,12 +8,12 @@
     <parent>
         <groupId>org.bioimageanalysis.icy</groupId>
         <artifactId>pom-icy</artifactId>
-        <version>3.0.0-a.1</version>
+        <version>3.0.0-a.4</version>
     </parent>
 
     <!-- Project Information -->
     <artifactId>channel-montage</artifactId>
-    <version>3.0.0-a.1</version>
+    <version>3.0.0-a.2</version>
 
     <name>Channel Montage</name>
     <description>
@@ -65,12 +65,4 @@
             <artifactId>blockvars</artifactId>
         </dependency>
     </dependencies>
-
-    <!-- Icy Maven repository (to find parent POM) -->
-    <repositories>
-        <repository>
-            <id>icy</id>
-            <url>https://nexus-icy.pasteur.cloud/repository/icy/</url>
-        </repository>
-    </repositories>
 </project>
