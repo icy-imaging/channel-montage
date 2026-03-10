@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2024. Institut Pasteur.
+ * Copyright (c) 2010-2026. Institut Pasteur.
  *
  * This file is part of Icy.
  * Icy is free software: you can redistribute it and/or modify
@@ -20,15 +20,15 @@ package plugins.adufour.viewers;
 
 import org.bioimageanalysis.icy.common.geom.point.Point5D;
 import org.bioimageanalysis.icy.extension.plugin.abstract_.Plugin;
-import org.bioimageanalysis.icy.extension.plugin.annotation_.IcyPluginIcon;
 import org.bioimageanalysis.icy.extension.plugin.annotation_.IcyPluginName;
 import org.bioimageanalysis.icy.extension.plugin.interface_.PluginCanvas;
 import org.bioimageanalysis.icy.gui.GraphicsUtil;
+import org.bioimageanalysis.icy.gui.LookAndFeelUtil;
 import org.bioimageanalysis.icy.gui.canvas.IcyCanvas2D;
 import org.bioimageanalysis.icy.gui.canvas.Layer;
 import org.bioimageanalysis.icy.gui.component.button.IcyButton;
-import org.bioimageanalysis.icy.gui.component.icon.IcySVGIcon;
-import org.bioimageanalysis.icy.gui.component.icon.SVGIcon;
+import org.bioimageanalysis.icy.gui.component.icon.IcySVG;
+import org.bioimageanalysis.icy.gui.component.icon.SVGResource;
 import org.bioimageanalysis.icy.gui.viewer.Viewer;
 import org.bioimageanalysis.icy.model.colormap.IcyColorMap;
 import org.bioimageanalysis.icy.model.colormap.LinearColorMap;
@@ -64,7 +64,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 @IcyPluginName("Channel Montage")
-@IcyPluginIcon(path = "/Channel_Montage.png")
 public class ChannelMontage extends Plugin implements PluginCanvas<ChannelMontage.ChannelMontageCanvas> {
     @Override
     public String getCanvasClassName() {
@@ -168,12 +167,12 @@ public class ChannelMontage extends Plugin implements PluginCanvas<ChannelMontag
 
         @Override
         public void customizeToolbar(final @NotNull JToolBar toolbar) {
-            final IcySVGIcon rgbIcon = new IcySVGIcon(SVGIcon.RGB_IMAGE);
-            final IcySVGIcon grayIcon = new IcySVGIcon(SVGIcon.GRAYSCALE_IMAGE);
+            final Icon rgbIcon = new IcySVG(SVGResource.RGB_IMAGE).getIcon(LookAndFeelUtil.getDefaultIconSize());
+            final Icon grayIcon = new IcySVG(SVGResource.GRAYSCALE_IMAGE).getIcon(LookAndFeelUtil.getDefaultIconSize());
 
             toolbar.addSeparator();
 
-            final IcyButton color = new IcyButton(SVGIcon.GRAYSCALE_IMAGE);
+            final IcyButton color = new IcyButton(SVGResource.GRAYSCALE_IMAGE);
             color.setToolTipText("Switch to grayscale mode");
             color.setFocusable(false);
             color.addActionListener(e -> {
@@ -313,7 +312,7 @@ public class ChannelMontage extends Plugin implements PluginCanvas<ChannelMontag
             }
 
             final ChannelView currentView = channelViews.get(channel);
-            final ChannelView globalView = channelViews.getLast();
+            final ChannelView globalView = channelViews.get(channelViews.size() - 1);
 
             currentView.imageCache.updateLUT();
             currentView.imageChanged();
