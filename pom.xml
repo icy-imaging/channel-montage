@@ -5,13 +5,14 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.bioimageanalysis.icy</groupId>
+        <groupId>fr.icy</groupId>
         <artifactId>pom-icy</artifactId>
-        <version>3.0.0-a.5</version>
+        <version>3.0.0-a.7</version>
     </parent>
 
+    <groupId>fr.icy.extensions</groupId>
     <artifactId>channel-montage</artifactId>
-    <version>3.0.0-a.5</version>
+    <version>3.0.0-a.7</version>
 
     <name>Channel Montage</name>
     <description>View your multichannel data as a montage with one image per channel plus a merged, color channel (useful to create figures for communication)</description>
@@ -81,12 +82,14 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.bioimageanalysis.icy</groupId>
+            <groupId>fr.icy.extensions</groupId>
             <artifactId>ezplug</artifactId>
+            <version>${fr.icy.extensions.ezplug.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.bioimageanalysis.icy</groupId>
+            <groupId>fr.icy.extensions</groupId>
             <artifactId>blockvars</artifactId>
+            <version>1.0.0-a.7</version>
         </dependency>
     </dependencies>
 </project>
