@@ -28,7 +28,6 @@ import fr.icy.gui.canvas.IcyCanvas2D;
 import fr.icy.gui.canvas.Layer;
 import fr.icy.gui.component.button.IcyButton;
 import fr.icy.gui.component.icon.IcySVG;
-import fr.icy.gui.component.icon.SVGResource;
 import fr.icy.gui.viewer.Viewer;
 import fr.icy.model.colormap.IcyColorMap;
 import fr.icy.model.colormap.LinearColorMap;
@@ -38,7 +37,6 @@ import fr.icy.model.lut.LUT;
 import fr.icy.model.roi.ROI;
 import fr.icy.model.sequence.DimensionId;
 import fr.icy.model.sequence.SequenceEvent;
-import fr.icy.system.logging.IcyLogger;
 import fr.icy.system.preferences.CanvasPreferences;
 import fr.icy.system.thread.SingleProcessor;
 import org.jetbrains.annotations.Contract;
@@ -62,9 +60,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @IcyPluginName("Channel Montage")
 public class ChannelMontage extends Plugin implements PluginCanvas<ChannelMontage.ChannelMontageCanvas> {
+    private static final Logger LOGGER = Logger.getLogger(ChannelMontage.class.getName());
+
     @Override
     public String getCanvasClassName() {
         return ChannelMontage.class.getName();
@@ -167,12 +169,12 @@ public class ChannelMontage extends Plugin implements PluginCanvas<ChannelMontag
 
         @Override
         public void customizeToolbar(final @NotNull JToolBar toolbar) {
-            final Icon rgbIcon = new IcySVG(SVGResource.RGB_IMAGE).getIcon(LookAndFeelUtil.getDefaultIconSize());
-            final Icon grayIcon = new IcySVG(SVGResource.GRAYSCALE_IMAGE).getIcon(LookAndFeelUtil.getDefaultIconSize());
+            final Icon rgbIcon = IcySVG.RGB_IMAGE.getIcon(LookAndFeelUtil.getDefaultIconSize());
+            final Icon grayIcon = IcySVG.GRAYSCALE_IMAGE.getIcon(LookAndFeelUtil.getDefaultIconSize());
 
             toolbar.addSeparator();
 
-            final IcyButton color = new IcyButton(SVGResource.GRAYSCALE_IMAGE);
+            final IcyButton color = new IcyButton(IcySVG.GRAYSCALE_IMAGE);
             color.setToolTipText("Switch to grayscale mode");
             color.setFocusable(false);
             color.addActionListener(e -> {
@@ -450,7 +452,8 @@ public class ChannelMontage extends Plugin implements PluginCanvas<ChannelMontag
                             result.get();
                         }
                         catch (final Exception e) {
-                            IcyLogger.error(ChannelMontage.class, e, e.getLocalizedMessage());
+                            if (LOGGER.isLoggable(Level.SEVERE))
+                                LOGGER.log(Level.SEVERE, "Unable to refresh.", e);
                         }
                     }
 
